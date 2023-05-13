@@ -27,7 +27,16 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+      await client.connect();
+      
+    const servicesCollection = client.db("carDoctor").collection("services");
+
+    app.get('/services', async (req, res) => {
+      const cursor = servicesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -41,10 +50,6 @@ run().catch(console.dir);
 
 app.get('/', (req, res)=> {
     res.send('car doctor server is running');
-})
-
-app.get('/services', (req, res)=>{
-res.send(services)
 })
 
 app.listen(port,()=> {
